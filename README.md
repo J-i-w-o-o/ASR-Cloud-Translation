@@ -6,7 +6,7 @@ An experimental application merging real-time Automatic Speech Recognition (ASR)
 
 Hey there! So, imagine this cool thing I've been working on—it's like this foundation to breaking language barriers! You know, like when you talk in one language, and It instantly translates into another language in real time. 
 
-Basically, I built this app that lets you talk in, let's say, English, and it magically turns into text. It then translates that text into tons of other languages quickly, 
+Basically, I built this app that lets you talk in, let's say, English, and it turns into text. It then translates that text into tons of other languages quickly, 
 
 I used like WebSocket.io, RecordRTC (for recording sound), socket.io-stream (for sending stuff back and forth), and Express.js (to help manage everything behind the scenes).
 

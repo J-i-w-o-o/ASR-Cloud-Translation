@@ -18,7 +18,7 @@ This projects aims to help folks easily understand each other in real time, no m
 
 - **Real-time Speech Recognition**: Capture and transcribe speech in real time using RecordRTC and WebSocket.io.
 - **Multi-language Translation**: Instantly translate transcribed text into various languages leveraging Cloud Translation.
--  **WEBRTC**: be able to implent this in a video/audio call.(TBA)
+-  **WEBRTC**: be able to implent this in a video/audio call using WEBRTC.(TBA)
 
 ## Dependencies
 

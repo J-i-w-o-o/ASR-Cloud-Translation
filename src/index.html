@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>WEBRTC VIDEO CALL APP + ASR/MT</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <style>
+      #results {
+        width: 800px;
+        height: 300px;
+        border: 1px solid #ccc;
+        padding: 8px;
+        font-size: 16px;
+        resize: none; /* Prevent resizing */
+        background-color: #f9f9f9; /* Light background color */
+        color: #333; /* Text color */
+        cursor: default; /* Prevent cursor interaction */
+      }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css" />
+  </head>
+
+  <script src="https://www.WebRTC-Experiment.com/RecordRTC.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.5.0/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io-stream/0.9.1/socket.io-stream.js"></script>
+  <body>
+    <div style="margin: 20px">
+      <h1 style="font-size: 18px">WEBRTC VIDEO CALL APP + ASR/MT</h1>
+
+      <div>
+        <button id="start-recording" disabled>Start Streaming</button>
+        <button id="stop-recording" disabled>Stop Streaming</button>
+      </div>
+
+      <h2 style="font-size: 14px">
+        <span style="display: block; font-style: italic; padding: 0px; margin: 0px">
+          Application Usage: 'Spoken Language' refers to the primary language spoken,&nbsp;&nbsp;
+        </span>
+        <span style="display: block; font-style: italic; padding: 0px; margin: 0px">
+          while 'Translated Language' refers to the desired language for text translation within the provided text box.
+        </span>
+      </h2>
+      <div style="display: flex; padding-bottom: 5px">
+        <label for="languageCodeDropdown">Select Spoken Language</label>
+        <select id="languageCodeDropdown"></select>
+        <label for="languageTextDropdown">Select Text Translated Language</label>
+        <select id="languageTextDropdown"></select>
+      </div>
+      <textarea
+        id="results"
+        readonly
+        style="width: 800px; height: 300px; border: 1px solid #ccc; padding: 8px; font-size: 16px;"
+      ></textarea>
+    </div>
+
+    <script type="text/javascript">
+      // Function to save selected languages to localStorage
+      function saveSelectedLanguages() {
+        const selectedLanguageCode = languageCodeDropdown.value;
+        const selectedLanguageText = languageTextDropdown.value;
+
+        localStorage.setItem("selectedLanguageCode", selectedLanguageCode);
+        localStorage.setItem("selectedLanguageText", selectedLanguageText);
+      }
+
+      // Function to load saved selected languages from localStorage
+      function loadSelectedLanguages() {
+        const selectedLanguageCode = localStorage.getItem("selectedLanguageCode");
+        const selectedLanguageText = localStorage.getItem("selectedLanguageText");
+
+        if (selectedLanguageCode && selectedLanguageText) {
+          languageCodeDropdown.value = selectedLanguageCode;
+          languageTextDropdown.value = selectedLanguageText;
+        }
+      }
+
+      // Fetch language data from the server
+      fetch("/languages.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const languageCodeDropdown = document.getElementById("languageCodeDropdown");
+          const languageTextDropdown = document.getElementById("languageTextDropdown");
+
+          // Populate language dropdowns
+          data.languages.forEach((language) => {
+            const optionCode = document.createElement("option");
+            optionCode.value = language.code;
+            optionCode.textContent = language.name;
+            languageCodeDropdown.appendChild(optionCode);
+
+            const optionText = document.createElement("option");
+            optionText.value = language.code;
+            optionText.textContent = language.name;
+            languageTextDropdown.appendChild(optionText);
+          });
+
+          // Load selected languages on page load
+          loadSelectedLanguages();
+        })
+        .catch((error) => {
+          console.error("Error fetching languages:", error);
+        });
+
+      // Socket.io setup
+      const socketio = io();
+      const socket = socketio.on("connect", function () {
+        startRecording.disabled = false; // Enable recording when socket is connected
+      });
+
+      const resultPreview = document.getElementById("results");
+
+      // Receive translated text from the server
+      socketio.on("translated-text", function (translatedText) {
+        // Display the translated text in the result preview element
+        resultPreview.textContent += " " + translatedText;
+      });
+
+      const languageCodeDropdown = document.getElementById("languageCodeDropdown");
+      const languageTextDropdown = document.getElementById("languageTextDropdown");
+
+      // Listen for changes in the language code dropdown
+      languageCodeDropdown.addEventListener("change", function () {
+        saveSelectedLanguages();
+        const selectedLanguageCode = languageCodeDropdown.value;
+        socket.emit("change-language-code", selectedLanguageCode); // Emit selected language code to the server
+      });
+
+      // Listen for changes in the text translated language dropdown
+      languageTextDropdown.addEventListener("change", function () {
+        saveSelectedLanguages();
+        const selectedLanguage = languageTextDropdown.value;
+        socket.emit("change-target-language", selectedLanguage); // Emit selected target language to the server
+      });
+
+      const startRecording = document.getElementById("start-recording");
+      const stopRecording = document.getElementById("stop-recording");
+      let recordAudio;
+
+      // Start recording audio
+      startRecording.onclick = function () {
+        startRecording.disabled = true; // Disable start button during recording
+
+        navigator.getUserMedia(
+          {
+            audio: true,
+          },
+          function (stream) {
+            recordAudio = RecordRTC(stream, {
+              type: "audio",
+              mimeType: "audio/webm",
+              sampleRate: 44100,
+              recorderType: StereoAudioRecorder,
+              numberOfAudioChannels: 1,
+              timeSlice: 4000,
+              desiredSampRate: 16000,
+              ondataavailable: function (blob) {
+                var stream = ss.createStream();
+                ss(socket).emit("stream-transcribe", stream, {
+                  name: "stream.wav",
+                  size: blob.size,
+                });
+                ss.createBlobReadStream(blob).pipe(stream);
+              },
+            });
+
+            recordAudio.startRecording();
+            stopRecording.disabled = false; // Enable stop button after recording starts
+          },
+          function (error) {
+            console.error(JSON.stringify(error));
+          }
+        );
+      };
+
+      // Stop recording audio
+      stopRecording.onclick = function () {
+        startRecording.disabled = false; // Enable start button after recording stops
+        stopRecording.disabled = true; // Disable stop button
+      };
+
+      // Function to establish WebSocket connection
+      function establishWebSocketConnection() {
+        if (!socketio || socketio.disconnected) {
+          connectSocket();
+        }
+      }
+
+      // Function to reconnect WebSocket on page refresh
+      function reconnectWebSocketOnPageRefresh() {
+        window.addEventListener("load", function () {
+          establishWebSocketConnection();
+        });
+
+        window.addEventListener("beforeunload", function () {
+          if (socketio) {
+            socketio.close();
+          }
+        });
+      }
+
+      reconnectWebSocketOnPageRefresh(); // Establish WebSocket connection on page load
+    </script>
+  </body>
+</html>

@@ -53,7 +53,7 @@ To run this application, follow these steps:
 
 ## Usage
 
-Once the server is running, access the application through a web browser.[localhost:8080](http://localhost:8080), 
+Once the server is running, access the application through a web browser - [localhost:8080](http://localhost:8080), 
 you can change the primary language( which is your spoken language), and you can also change the text it will translate to.
 
 ## Contributions

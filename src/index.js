@@ -10,7 +10,11 @@ const speech = require("@google-cloud/speech");
 const { TranslationServiceClient } = require("@google-cloud/translate");
 
 // Setting Google Cloud service account credentials
-process.env.GOOGLE_APPLICATION_CREDENTIALS = "../credentials/service_account.json";
+process.env.GOOGLE_APPLICATION_CREDENTIALS ="../credentials/service_account.json";
+const filePath = path.join(__dirname, '../credentials/service_account.json');
+const fileContent = fs.readFileSync(filePath, 'utf-8');
+const serviceAccount = JSON.parse(fileContent);
+const projectId = serviceAccount.project_id;
 
 // Open external URLs in the default browser
 const opn = require("opn");
@@ -57,7 +61,7 @@ function setupServer() {
   // Function to translate text using Google Cloud Translation API
   async function translateText(text, targetLanguage) {
     const request = {
-      parent: `projects/${process.env.GOOGLE_PROJECT_ID || "Insert_Project _ID_here"}`,
+      parent: `projects/${process.env.GOOGLE_PROJECT_ID || projectId}`,
       contents: [text],
       mimeType: "text/plain",
       sourceLanguageCode: sourceLanguageCode,
@@ -92,8 +96,8 @@ function setupServer() {
       const filename = path.basename(data.name);
       stream.pipe(fs.createWriteStream(filename));
 
-      const translationRequest = {
-        parent: `projects/${process.env.GOOGLE_PROJECT_ID || "Insert_Project _ID_here"}`,
+      const translationRequest = { //to be able to console log Translation Config
+        parent: `projects/${process.env.GOOGLE_PROJECT_ID || projectId}`,
         contents: [data.text],
         mimeType: "text/plain",
         sourceLanguageCode: sourceLanguageCode,

@@ -45,7 +45,7 @@ To run this application, follow these steps:
    - For guidance on creating service account keys, refer to [Google Cloud documentation](https://cloud.google.com/iam/docs/keys-create-delete).
 
 
-4. **Configure Google Cloud Project ID**:
+4. **Configure Google Cloud Project ID**:(optional) 
    - Open `src/index.js`.
    - Replace the value for the project ID with your actual Google Cloud Project ID.
 

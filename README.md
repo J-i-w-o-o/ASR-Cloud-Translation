@@ -32,6 +32,7 @@ This project relies on the following dependencies:
 
 ## Setting Up
 (Note: Before Starting this requires Google Cloud Platform with billing enabled )
+
 To run this application, follow these steps:
 
 1. **Install Node.js**: Ensure you have Node.js installed on your machine.

@@ -1,4 +1,4 @@
-# ASR-Cloud-Translation
+# ASR-Cloud-Translation by: Jiwoo
 
 An experimental application merging real-time Automatic Speech Recognition (ASR) with Cloud Translation. This project utilizes WebSocket.io, RecordRTC, socket.io-stream, and Express.js to capture speech, convert it to text via ASR, and instantly translate it into various languages. 
 

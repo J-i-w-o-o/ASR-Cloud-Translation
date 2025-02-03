@@ -56,8 +56,10 @@ To run this application, follow these steps:
 
 Once the server is running, access the application through a web browser - [localhost:8080](http://localhost:8080), 
 you can change the primary language( which is your spoken language), and you can also change the text it will translate to.
+
 ##Sample UI
-![385540683_1081093813244267_5030474768216744848_n](https://github.com/user-attachments/assets/f20326e1-520b-41e1-abfd-97ef6ca5b461)
+![Untitled1](https://github.com/user-attachments/assets/5577f856-8ad7-4b01-b273-c52db57fcae5)
+(The Given Image above is not the latest, I've updated the UI and optimized translation threading and voice pickup still had a lot to do, I'm just waiting to setup my gcloud account again)
 ## Contributions
 
 Contributions, issues, and feature requests are welcome. Feel free to fork and submit pull requests to enhance the functionality of this experimental ASR and Cloud Translation application.

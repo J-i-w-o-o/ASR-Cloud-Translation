@@ -56,12 +56,14 @@ To run this application, follow these steps:
 
 Once the server is running, access the application through a web browser - [localhost:8080](http://localhost:8080), 
 you can change the primary language( which is your spoken language), and you can also change the text it will translate to.
-
+##Sample UI
+![385540683_1081093813244267_5030474768216744848_n](https://github.com/user-attachments/assets/f20326e1-520b-41e1-abfd-97ef6ca5b461)
 ## Contributions
 
 Contributions, issues, and feature requests are welcome. Feel free to fork and submit pull requests to enhance the functionality of this experimental ASR and Cloud Translation application.
 
 ## License
+
 
 This project is licensed under the Apache License, Version 2.0. Refer to the [LICENSE] file for more details.
 
